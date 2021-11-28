@@ -24,6 +24,7 @@ def start(message):
     bot.send_message(message.chat.id, "Доброго времени суток, <b>{0.first_name}</b>! \nС этого момента, я, <b>{1.first_name}</b>, буду вашим помощником\
  в составлении школьного расписания!".format(message.from_user, bot.get_me()), parse_mode='html')
 
+#start of registration
 @bot.message_handler(commands=['reg'])
 def reg(message):
     #keyboard
@@ -33,16 +34,20 @@ def reg(message):
     markup.add(item1,item2)
 
     bot.send_message(message.chat.id, 'Давай посмотрим, что тебе нужно:', reply_markup=markup)
-    
+
+#echo all messages
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
     if message.text == '📝 Создать новое расписание':
         bot.register_next_step_handler(message, create_new_timetable)
     elif message.text == '✏️ Изменить расписание':
         global monday, tuesday, wednesday, thursday, friday, saturday, sunday
+
+        #checks dictionaries filling
         if monday=='' or tuesday=='' or wednesday=='' or thursday=='' or friday=='' or saturday=='' or sunday=='':
             bot.reply_to(message, 'Тебе нечего изменять!\nСоздай новое расписание!')
 
+        #using keyboeard
         else:
             #keyboard
             date = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -79,16 +84,28 @@ def determine_date(message):
         bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🏙 Вторник':
         chosen_date = 'Вторник'
+        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🏞 Среда':
         chosen_date = 'Среда'
+        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🌅 Четверг':
         chosen_date = 'Четверг'
+        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🌄 Пятница':
         chosen_date = 'Пятница'
+        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🌇 Суббота':
         chosen_date = 'Суббота'
+        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🌌 Воскресенье':
         chosen_date = 'Воскресенье'
+        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.register_next_step_handler(message, determine_lesson)
     else:
         bot.reply_to(message, 'Ты ввел что-то непонятное\n Пожалуйста, пользуйся уже данной тебе клавиатурой :)')
 
