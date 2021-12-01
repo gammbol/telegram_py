@@ -41,7 +41,7 @@ action.add(add, delete)
 #start chatting with bot
 @bot.message_handler(commands=['start'])
 def start(message):
-    sti = open('welcome_sticker.webp', 'rb')
+    sti = open('welcome.tgs', 'rb')
     bot.send_sticker(message.chat.id, sti)
 
     bot.send_message(message.chat.id, "Доброго времени суток, <b>{0.first_name}</b>! \nС этого момента, я, <b>{1.first_name}</b>,\
@@ -289,31 +289,31 @@ def determine_date(message):
     global chosen_date
     if message.text == '🌃 Понедельник':
         chosen_date = 'Понедельник'
-        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
         bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🏙 Вторник':
         chosen_date = 'Вторник'
-        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
         bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🏞 Среда':
         chosen_date = 'Среда'
-        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
         bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🌅 Четверг':
         chosen_date = 'Четверг'
-        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
         bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🌄 Пятница':
         chosen_date = 'Пятница'
-        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
         bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🌇 Суббота':
         chosen_date = 'Суббота'
-        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
         bot.register_next_step_handler(message, determine_lesson)
     elif message.text == '🌌 Воскресенье':
         chosen_date = 'Воскресенье'
-        bot.send_message(message.chat.id, 'Теперь отправь название урока!')
+        bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
         bot.register_next_step_handler(message, determine_lesson)
     else:
         bot.reply_to(message, 'Вы ввели что-то непонятное\n Пожалуйста, пользуйтесь уже данной вам клавиатурой :)')
@@ -325,7 +325,7 @@ def determine_lesson(message):
     global chosen_lesson
     chosen_lesson = message.text
 
-    bot.send_message(message.chat.id, 'Введи время начала урока!\n(Только вводи в форме HH:MM и в 24-часовом формате, например, 22:30)')
+    bot.send_message(message.chat.id, 'Введите время начала урока!\n(Только вводите в форме HH:MM и в 24-часовом формате, например, 22:30)')
     bot.register_next_step_handler(message, confirm_timetable)
 
 #confirms timetable
@@ -340,7 +340,7 @@ def confirm_timetable(message):
     confirm.add(yes, no)
 
     #sends a message and makes next step
-    bot.send_message(message.chat.id, 'Теперь давай все проверим)\n\
+    bot.send_message(message.chat.id, 'Теперь давайте все проверим)\n\
 В {0.text}, {1} у вас будет урок {2}. Верно?'.format(message,chosen_date,chosen_lesson), reply_markup=confirm)
     bot.register_next_step_handler(message, apply_changes)
 
@@ -397,5 +397,7 @@ def apply_changes(message):
         bot.register_next_step_handler(message, echo_all)
     else:
         bot.reply_to(message, 'Извините, но вы ввели что-то непонятное!')
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
 
 bot.polling(none_stop=True, interval=0)

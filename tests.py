@@ -28,3 +28,7 @@ def dict_add():
     print(monday)
 
 dict_add()
+
+lesson = {'lessons' : ['22:00', '22:40']}
+
+print(lesson['lessons'][1])
