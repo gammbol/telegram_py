@@ -1,5 +1,6 @@
 import telebot
 from telebot import types
+import sqlite3
 
 bot = telebot.TeleBot('2124840185:AAE1nh4vlzNfqRV_hzAjQVUvuZv3HgVQT0s')
 
@@ -7,13 +8,22 @@ bot = telebot.TeleBot('2124840185:AAE1nh4vlzNfqRV_hzAjQVUvuZv3HgVQT0s')
 chosen_time = ''
 chosen_date = ''
 chosen_lesson = ''
-monday={}
-tuesday = {}
-wednesday = {}
-thursday = {}
-friday = {}
-saturday = {}
-sunday = {}
+lesson_end_time = ''
+lesson_start_time = ''
+
+#data base
+connect = sqlite3.connect('timetable.db', check_same_thread=False)
+cursor = connect.cursor()
+
+#creating timetable
+cursor.execute("""CREATE TABLE IF NOT EXISTS timetable(
+    id INTEGER,
+    lesson VARCHAR,
+    date VARCHAR,
+    start VARCHAR,
+    end VARCHAR    
+)""")
+connect.commit()
 
 #keyboard
 date = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -79,61 +89,110 @@ def echo_all(message):
 
 #shows timetable
 def show_timetable(message):
-    if monday or tuesday or wednesday or thursday or friday or saturday or sunday:
-        if message.text == '🌃 Понедельник':
-            for lesson, time in monday.items():
-                bot.reply_to(message, '{0}: {1}'.format(lesson,time))
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif message.text == '🏙 Вторник':
-            for lesson, time in tuesday.items():
-                bot.reply_to(message, '{0} : {1}'.format(lesson,time))
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif message.text == '🏞 Среда':
-            for lesson, time in wednesday.items():
-                bot.reply_to(message, '{0} : {1}'.format(lesson,time))
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif message.text == '🌅 Четверг':
-            for lesson, time in thursday.items():
-                bot.reply_to(message, '{0} : {1}'.format(lesson,time))
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif message.text == '🌄 Пятница':
-            for lesson, time in friday.items():
-                bot.reply_to(message, '{0} : {1}'.format(lesson,time))
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif message.text == '🌇 Суббота':
-            for lesson, time in saturday.items():
-                bot.reply_to(message, '{0} : {1}'.format(lesson,time))
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif message.text == '🌌 Воскресенье':
-            for lesson, time in sunday.items():
-                bot.reply_to(message, '{0} : {1}'.format(lesson,time))
+    user_id = message.chat.id
+    if message.text == '🌃 Понедельник':
+        cursor.execute(f"SELECT * FROM timetable WHERE id = {user_id} AND date = 'Понедельник'")
+        data = cursor.fetchall()
+        if data:
+            for row in data: 
+                bot.send_message(message.chat.id, '{0}: {1} - {2}'.format(row[1], row[3], row[4]))
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
         else:
-            bot.reply_to(message, 'Вы ввели что-то непонятное\nПожалуйста, пользуйтесь уже данной вам клавиатурой :)')
+            bot.reply_to(message, 'Мне нечего показывать!\nВаше расписание пустое!')
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
+
+    elif message.text == '🏙 Вторник':
+        cursor.execute(f"SELECT * FROM timetable WHERE id = {user_id} AND date = 'Вторник'")
+        data = cursor.fetchall()
+        if data:
+            for row in data: 
+                bot.send_message(message.chat.id, '{0}: {1} - {2}'.format(row[1], row[3], row[4]))
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+        else:
+            bot.reply_to(message, 'Мне нечего показывать!\nВаше расписание пустое!')
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+
+    elif message.text == '🏞 Среда':
+        cursor.execute(f"SELECT * FROM timetable WHERE id = {user_id} AND date = 'Среда'")
+        data = cursor.fetchall()
+        if data:
+            for row in data: 
+                bot.send_message(message.chat.id, '{0}: {1} - {2}'.format(row[1], row[3], row[4]))
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+        else:
+            bot.reply_to(message, 'Мне нечего показывать!\nВаше расписание пустое!')
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+
+    elif message.text == '🌅 Четверг':
+        cursor.execute(f"SELECT * FROM timetable WHERE id = {user_id} AND date = 'Четверг'")
+        data = cursor.fetchall()
+        if data:
+            for row in data: 
+                bot.send_message(message.chat.id, '{0}: {1} - {2}'.format(row[1], row[3], row[4]))
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+        else:
+            bot.reply_to(message, 'Мне нечего показывать!\nВаше расписание пустое!')
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+
+    elif message.text == '🌄 Пятница':
+        cursor.execute(f"SELECT * FROM timetable WHERE id = {user_id} AND date = 'Пятница'")
+        data = cursor.fetchall()
+        if data:
+            for row in data: 
+                bot.send_message(message.chat.id, '{0}: {1} - {2}'.format(row[1], row[3], row[4]))
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+        else:
+            bot.reply_to(message, 'Мне нечего показывать!\nВаше расписание пустое!')
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+
+    elif message.text == '🌇 Суббота':
+        cursor.execute(f"SELECT * FROM timetable WHERE id = {user_id} AND date = 'Суббота'")
+        data = cursor.fetchall()
+        if data:
+            for row in data: 
+                bot.send_message(message.chat.id, '{0}: {1} - {2}'.format(row[1], row[3], row[4]))
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+        else:
+            bot.reply_to(message, 'Мне нечего показывать!\nВаше расписание пустое!')
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+
+    elif message.text == '🌌 Воскресенье':
+        cursor.execute(f"SELECT * FROM timetable WHERE id = {user_id} AND date = 'Воскресенье'")
+        data = cursor.fetchall()
+        if data:
+            for row in data: 
+                bot.send_message(message.chat.id, '{0}: {1} - {2}'.format(row[1], row[3], row[4]))
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+        else:
+            bot.reply_to(message, 'Мне нечего показывать!\nВаше расписание пустое!')
+            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+            bot.register_next_step_handler(message, echo_all)
+
     else:
-        bot.reply_to(message, 'Мне нечего показывать!\nВаше расписание пустое!')
+        bot.reply_to(message, 'Вы ввели что-то непонятное\nПожалуйста, пользуйтесь уже данной вам клавиатурой :)')
         bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
         bot.register_next_step_handler(message, echo_all)
+    
 
 #creating new timetable
 def create_new_timetable(message):
+    user_id = message.chat.id
     if message.text == '🟩 Да, уверен(-а)':
-        monday.clear()
-        tuesday.clear()
-        wednesday.clear()
-        thursday.clear()
-        friday.clear()
-        saturday.clear()
-        sunday.clear()
+        cursor.execute(f"DELETE FROM timetable WHERE id = {user_id}")
+        connect.commit()
 
         bot.send_message(message.chat.id, 'Ваше расписание было успешно сброшено!')
         bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
@@ -150,13 +209,8 @@ def create_new_timetable(message):
 #choses action to do (delete or add)
 def choosing_action(message):
     if message.text == '❌ Удалить':
-        if monday or tuesday or wednesday or thursday or friday or saturday or sunday:
-            bot.send_message(message.chat.id, 'Укажите день, в котором урок нужно удалить', reply_markup=date)
-            bot.register_next_step_handler(message, determine_date_to_delete)
-        else:
-            bot.reply_to(message, 'Вам нечего удалять!\nВаше расписание пустое!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
+        bot.send_message(message.chat.id, 'Укажите день, в котором урок нужно удалить', reply_markup=date)
+        bot.register_next_step_handler(message, determine_date_to_delete)
     elif message.text == '📌 Добавить':
             #question
             bot.send_message(message.chat.id, 'Хорошо!\nРасписание какого дня вам нужно изменить?', reply_markup=date)
@@ -202,83 +256,71 @@ def determine_date_to_delete(message):
 
 #deletes determined lesson
 def delete_lesson(message):
+    user_id = message.chat.id
+    lesson_to_delete = message.text
     if chosen_date == 'Понедельник':
-        if message.text in monday:
-            del monday[message.text]
-            bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
+        cursor.execute(f"DELETE FROM timetable WHERE id = {user_id} AND date = 'Понедельник' AND lesson = '{lesson_to_delete}'")
+        connect.commit()
+        bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
 Направляю вас в начало диалога')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        else:
-            bot.reply_to(message, 'К сожалению, такого урока в вашем расписании нет!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
+
+
     elif chosen_date == 'Вторник':
-        if message.text in tuesday:
-            del tuesday[message.text]
-            bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
+        cursor.execute(f"DELETE FROM timetable WHERE id = {user_id} AND date = 'Вторник' AND lesson = '{lesson_to_delete}'")
+        connect.commit()
+        bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
 Направляю вас в начало диалога')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        else:
-            bot.reply_to(message, 'К сожалению, такого урока в вашем расписании нет!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
+
+
     elif chosen_date == 'Среда':
-        if message.text in wednesday:
-            del wednesday[message.text]
-            bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
+        cursor.execute(f"DELETE FROM timetable WHERE id = {user_id} AND date = 'Среда' AND lesson = '{lesson_to_delete}'")
+        connect.commit()
+        bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
 Направляю вас в начало диалога')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        else:
-            bot.reply_to(message, 'К сожалению, такого урока в вашем расписании нет!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
+
+
     elif chosen_date == 'Четверг':
-        if message.text in thursday:
-            del thursday[message.text]
-            bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
+        cursor.execute(f"DELETE FROM timetable WHERE id = {user_id} AND date = 'Четверг' AND lesson = '{lesson_to_delete}'")
+        connect.commit()
+        bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
 Направляю вас в начало диалога')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        else:
-            bot.reply_to(message, 'К сожалению, такого урока в вашем расписании нет!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
+
+
     elif chosen_date == 'Пятница':
-        if message.text in friday:
-            del friday[message.text]
-            bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
+        cursor.execute(f"DELETE FROM timetable WHERE id = {user_id} AND date = 'Пятница' AND lesson = '{lesson_to_delete}'")
+        connect.commit()
+        bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
 Направляю вас в начало диалога')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        else:
-            bot.reply_to(message, 'К сожалению, такого урока в вашем расписании нет!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
+
+
     elif chosen_date == 'Суббота':
-        if message.text in saturday:
-            del saturday[message.text]
-            bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
+        cursor.execute(f"DELETE FROM timetable WHERE id = {user_id} AND date = 'Суббота' AND lesson = '{lesson_to_delete}'")
+        connect.commit()
+        bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
 Направляю вас в начало диалога')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        else:
-            bot.reply_to(message, 'К сожалению, такого урока в вашем расписании нет!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
+
+
     elif chosen_date == 'Воскресенье':
-        if message.text in sunday:
-            del sunday[message.text]
-            bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
+        cursor.execute(f"DELETE FROM timetable WHERE id = {user_id} AND date = 'Воскресенье' AND lesson = '{lesson_to_delete}'")
+        connect.commit()
+        bot.send_message(message.chat.id, 'Урок был успешно удален!\n\
 Направляю вас в начало диалога')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        else:
-            bot.reply_to(message, 'К сожалению, такого урока в вашем расписании нет!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
+
+
     else:
         bot.reply_to(message, 'Вы ввели что-то непонятное\n Пожалуйста, пользуйтесь уже данной вам клавиатурой :)')
         bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
@@ -290,48 +332,56 @@ def determine_date(message):
     if message.text == '🌃 Понедельник':
         chosen_date = 'Понедельник'
         bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
-        bot.register_next_step_handler(message, determine_lesson)
+        bot.register_next_step_handler(message, lesson_starts)
     elif message.text == '🏙 Вторник':
         chosen_date = 'Вторник'
         bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
-        bot.register_next_step_handler(message, determine_lesson)
+        bot.register_next_step_handler(message, lesson_starts)
     elif message.text == '🏞 Среда':
         chosen_date = 'Среда'
         bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
-        bot.register_next_step_handler(message, determine_lesson)
+        bot.register_next_step_handler(message, lesson_starts)
     elif message.text == '🌅 Четверг':
         chosen_date = 'Четверг'
         bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
-        bot.register_next_step_handler(message, determine_lesson)
+        bot.register_next_step_handler(message, lesson_starts)
     elif message.text == '🌄 Пятница':
         chosen_date = 'Пятница'
         bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
-        bot.register_next_step_handler(message, determine_lesson)
+        bot.register_next_step_handler(message, lesson_starts)
     elif message.text == '🌇 Суббота':
         chosen_date = 'Суббота'
         bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
-        bot.register_next_step_handler(message, determine_lesson)
+        bot.register_next_step_handler(message, lesson_starts)
     elif message.text == '🌌 Воскресенье':
         chosen_date = 'Воскресенье'
         bot.send_message(message.chat.id, 'Теперь отправьте название урока!')
-        bot.register_next_step_handler(message, determine_lesson)
+        bot.register_next_step_handler(message, lesson_starts)
     else:
         bot.reply_to(message, 'Вы ввели что-то непонятное\n Пожалуйста, пользуйтесь уже данной вам клавиатурой :)')
         bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
         bot.register_next_step_handler(message, echo_all)
 
 #determines a lesson
-def determine_lesson(message):
+def lesson_starts(message):
     global chosen_lesson
     chosen_lesson = message.text
 
-    bot.send_message(message.chat.id, 'Введите время начала урока!\n(Только вводите в форме HH:MM и в 24-часовом формате, например, 22:30)')
+    bot.send_message(message.chat.id, 'Введите время начала урока!\n\
+(Только вводите в форме HH:MM и в 24-часовом формате, например, 12:30)')
+    bot.register_next_step_handler(message, lesson_ends)
+
+def lesson_ends(message):
+    global lesson_start_time
+    lesson_start_time = message.text
+    bot.send_message(message.chat.id, 'Теперь введите время конца урока!\n\
+(Только вводите в форме HH:MM и в 24-часовом формате, например, 12:30)')
     bot.register_next_step_handler(message, confirm_timetable)
 
 #confirms timetable
 def confirm_timetable(message):
-    global monday, tuesday, wednesday, thursday, friday, saturday, sunday, chosen_lesson, chosen_date, chosen_time
-    chosen_time = message.text
+    global chosen_lesson, chosen_date, lesson_start_time, lesson_end_time
+    lesson_end_time = message.text
     
     #keyboard
     confirm = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -341,56 +391,58 @@ def confirm_timetable(message):
 
     #sends a message and makes next step
     bot.send_message(message.chat.id, 'Теперь давайте все проверим)\n\
-В {0.text}, {1} у вас будет урок {2}. Верно?'.format(message,chosen_date,chosen_lesson), reply_markup=confirm)
+В {0}, {1} у вас будет урок {2}, который закончится в {3}. \
+Верно?'.format(lesson_start_time,chosen_date,chosen_lesson, lesson_end_time), reply_markup=confirm)
     bot.register_next_step_handler(message, apply_changes)
 
 #applies changes
 def apply_changes(message):
     if message.text == '🟢 Да, все верно!':
-        global monday, tuesday, wednesday, thursday, friday, saturday, sunday, chosen_lesson, chosen_date, chosen_time
-        #writing a lesson in dictionary
+        global chosen_lesson, chosen_date, lesson_start_time, lesson_end_time
+        #writing a lesson in db
         if chosen_date == 'Понедельник':
-            monday[chosen_lesson] = chosen_time
-            print(monday)
+            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
+            connect.commit()
             bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
         elif chosen_date == 'Вторник':
-            tuesday[chosen_lesson] = chosen_time
-            print(tuesday)
+            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
+            connect.commit()
             bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
         elif chosen_date == 'Среда':
-            wednesday[chosen_lesson] = chosen_time
-            print(wednesday)
+            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
+            connect.commit()
             bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
         elif chosen_date == 'Четверг':
-            thursday[chosen_lesson] = chosen_time
-            print(thursday)
+            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
+            connect.commit()
             bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
         elif chosen_date == 'Пятница':
-            friday[chosen_lesson] = chosen_time
-            print(friday)
+            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
+            connect.commit()
             bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
         elif chosen_date == 'Суббота':
-            saturday[chosen_lesson] = chosen_time
-            print(saturday)
+            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
+            connect.commit()
             bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
         elif chosen_date == 'Воскресенье':
-            sunday[chosen_lesson] = chosen_time
-            print(sunday)
+            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
+            connect.commit()
             bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
             bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
             bot.register_next_step_handler(message, echo_all)
+
     elif message.text == '🔴 Нет, я хочу кое-что изменить!':
         bot.send_message(message.chat.id, 'Хорошо! Возвращаю вас в начало!')
         bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
