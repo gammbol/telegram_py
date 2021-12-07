@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 import sqlite3
 
-bot = telebot.TeleBot('2124840185:AAE1nh4vlzNfqRV_hzAjQVUvuZv3HgVQT0s')
+bot = telebot.TeleBot('111')
 
 #timetable data
 chosen_time = ''
