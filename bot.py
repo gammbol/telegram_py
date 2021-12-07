@@ -85,7 +85,7 @@ def echo_all(message):
         bot.send_message(message.chat.id, 'Расписание какого дня вы хотите посмотреть?', reply_markup=date)
         bot.register_next_step_handler(message, show_timetable)
     else:
-        bot.reply_to(message, 'У тебя нет друзей?\nПочему ты общаешься с ботом?')
+        bot.reply_to(message, 'Я не понимаю, что вы пишите!\nПожалуйста, воспользуйтесь данной вам клавиатурой!')
 
 #shows timetable
 def show_timetable(message):
