@@ -76,8 +76,6 @@ def echo_all(message):
         bot.send_message(message.chat.id, 'Вы уверены?\nЭто удалит все ваше расписание!', reply_markup=choice)
         bot.register_next_step_handler(message, create_new_timetable)
     elif message.text == '✏️ Изменить расписание':
-        global monday, tuesday, wednesday, thursday, friday, saturday, sunday
-
         #next registration step
         bot.send_message(message.chat.id, 'Как именно вы хотите изменить свое расписание?', reply_markup=action)
         bot.register_next_step_handler(message, choosing_action)
@@ -400,49 +398,11 @@ def apply_changes(message):
     if message.text == '🟢 Да, все верно!':
         global chosen_lesson, chosen_date, lesson_start_time, lesson_end_time
         #writing a lesson in db
-        if chosen_date == 'Понедельник':
-            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
-            connect.commit()
-            bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif chosen_date == 'Вторник':
-            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
-            connect.commit()
-            bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif chosen_date == 'Среда':
-            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
-            connect.commit()
-            bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif chosen_date == 'Четверг':
-            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
-            connect.commit()
-            bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif chosen_date == 'Пятница':
-            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
-            connect.commit()
-            bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif chosen_date == 'Суббота':
-            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
-            connect.commit()
-            bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-        elif chosen_date == 'Воскресенье':
-            cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
-            connect.commit()
-            bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
-            bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
-            bot.register_next_step_handler(message, echo_all)
-
+        cursor.execute(f"INSERT INTO timetable VALUES (?, ?, ?, ?, ?)", (message.chat.id, chosen_lesson, chosen_date, lesson_start_time, lesson_end_time))
+        connect.commit()
+        bot.send_message(message.chat.id, 'Ваш урок был успешно добавлен!\nВозвращаю вас в начало!')
+        bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
+        bot.register_next_step_handler(message, echo_all)
     elif message.text == '🔴 Нет, я хочу кое-что изменить!':
         bot.send_message(message.chat.id, 'Хорошо! Возвращаю вас в начало!')
         bot.send_message(message.chat.id, 'Давайте посмотрим, что вам нужно:', reply_markup=markup)
